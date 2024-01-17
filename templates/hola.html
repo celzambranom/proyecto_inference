@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificador de imágenes</title>
+
+    <style>
+        #imagen-preview {
+            max-width: 100%;
+            max-height: 400px;
+            margin-top: 20px;
+        }
+    </style>
+
+<style>
+    body {
+        text-align: center; /* Centra el texto horizontalmente */
+    }
+
+    .centrado-vertical {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 20vh; /* 100% del viewport height */
+    }
+</style>
+
+<style>
+    .contenedor-botones {
+        text-align: center; /* Centra los botones horizontalmente */
+    }
+
+    .boton {
+        margin: 10px; /* Agrega espacio alrededor del botón */
+        padding: 10px 20px; /* Opcional: agrega espacio dentro del botón */
+    }
+</style>
+</head>
+
+<br>
+    <div class="centrado-vertical">
+        <h1>!!Clasificador de imágenes!!</h1>
+    </div>
+
+    <h2>Imagen a clasificar:</h2>
+    
+    <form action="/clasificar_imagen" method="post" enctype="multipart/form-data">
+        <label for="imagen">Selecciona una imagen:</label>
+        <input type="file" name="imagen" id="imagen-input" accept="image/*" required>
+
+        <br><br>
+        <!-- ComboBox para seleccionar el tipo de modelo -->
+        <label for="modelo">Selecciona el tipo de modelo:</label>
+        <select name="modelo" id="modelo" required>
+            <option value="" disabled selected>Seleccione un tipo de modelo</option>
+            <option value="resnet50">ResNet50</option>
+            <option value="vgg16">VGG16</option>
+            <option value="nasnetlarge">NASNetLarge</option>
+            <option value="inception">InceptionResNetV2</option>
+        </select>
+        <br>
+
+        <img id="imagen-preview" src="#" alt="Vista previa de la imagen" style="display: none;">
+        <br>
+        <div class="contenedor-botones">
+            <input class="boton" margin=10px type="submit" value="Clasificar">
+        </div>
+    </form>
+
+    <script>
+        // Función para mostrar la vista previa de la imagen
+        function mostrarVistaPrevia() {
+            var input = document.getElementById('imagen-input');
+            var preview = document.getElementById('imagen-preview');
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Asigna la función al evento change del input de imagen
+        document.getElementById('imagen-input').addEventListener('change', mostrarVistaPrevia);
+    </script>
+
+    
+    <hr>
+    <h2>Resultado:</h2> <h2>Modelo utilizado: {{ model }}</h2>
+    {% for salida in salidas %}
+        <h4>{{ salida['label'] }}</h4>    
+        <h4>{{ salida['probability'] }}</h4>
+        <hr>
+    {% endfor %}
+
+</body>
+</html>
